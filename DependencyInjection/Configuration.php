@@ -1,6 +1,6 @@
 <?php
 
-namespace Hypertext\Access\DependencyInjection;
+namespace Hypertext\Bundle\DependencyInjection;
 
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;

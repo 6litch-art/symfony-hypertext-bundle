@@ -13,12 +13,12 @@
     ],
     "autoload": {
         "psr-4": {
-            "Symfony\\UX\\HypertextAccess\\": "."
+            "Symfony\\UX\\Hypertext\\": "."
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "Tests\\Symfony\\UX\\HypertextAccess\\": "./Tests"
+            "Tests\\Symfony\\UX\\Hypertext\\": "./Tests"
         }
     },
     "require": {

@@ -1,9 +1,9 @@
 <?php
 
-namespace Hypertext\Access\DependencyInjection;
+namespace Hypertext\Bundle\DependencyInjection;
 
 use Symfony\Component\HttpKernel\CacheWarmer\CacheWarmerInterface;
-use Hypertext\Access\Factory\HypertextAccessFactory;
+use Hypertext\Bundle\Factory\HypertextFactory;
 
 class CacheWarmer implements CacheWarmerInterface
 {
@@ -13,47 +13,32 @@ class CacheWarmer implements CacheWarmerInterface
     protected string $shellVerbosity;
 
     /**
-     * @var HypertextAccessFactory
+     * @var HypertextFactory
      */
-    protected $wellKnownFactory;
+    protected $hypertextFactory;
 
-    public function __construct(HypertextAccessFactory $wellKnownFactory)
+    public function __construct(HypertextFactory $hypertextFactory)
     {
         $this->shellVerbosity = getenv("SHELL_VERBOSITY");
-        $this->wellKnownFactory   = $wellKnownFactory;
+        $this->hypertextFactory   = $hypertextFactory;
     }
 
     public function isOptional(): bool
     {
-        return true;
+        return false;
     }
     public function warmUp($cacheDir): array
     {
         if ($this->shellVerbosity > 0 && php_sapi_name() == "cli") {
-            echo " // Warming up cache... Well Known Bundle.. ";
+            echo " // Warming up cache... Hypertext access bundle.. ";
         }
 
-        $robots = $this->wellKnownFactory->robots();
-        if ($this->shellVerbosity > 0 && php_sapi_name() == "cli" && $robots) {
-            echo "robots.txt.. ";
+        $htpasswd = $this->hypertextFactory->htpasswd();
+        if ($this->shellVerbosity > 0 && php_sapi_name() == "cli" && $htpasswd) {
+            echo ".htpasswd.. ";
         }
 
-        $security = $this->wellKnownFactory->security();
-        if ($this->shellVerbosity > 0 && php_sapi_name() == "cli" && $security) {
-            echo "security.txt.. ";
-        }
-
-        $humans = $this->wellKnownFactory->humans();
-        if ($this->shellVerbosity > 0 && php_sapi_name() == "cli" && $humans) {
-            echo "humans.txt.. ";
-        }
-
-        $ads = $this->wellKnownFactory->ads();
-        if ($this->shellVerbosity > 0 && php_sapi_name() == "cli" && $ads) {
-            echo "ads.txt.. ";
-        }
-
-        $htaccess = $this->wellKnownFactory->htaccess();
+        $htaccess = $this->hypertextFactory->htaccess();
         if ($this->shellVerbosity > 0 && php_sapi_name() == "cli" && $htaccess) {
             echo ".htaccess.. ";
         }
@@ -62,6 +47,6 @@ class CacheWarmer implements CacheWarmerInterface
             echo PHP_EOL.PHP_EOL;
         }
 
-        return array_filter([$security, $robots, $humans, $ads, $htaccess]);
+        return array_filter([$htpasswd, $htaccess]);
     }
 }

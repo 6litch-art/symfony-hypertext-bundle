@@ -1,7 +1,7 @@
 {
-    "name": "glitchr/htaccess-bundle",
+    "name": "glitchr/hypertext-bundle",
     "type": "symfony-bundle",
-    "description": "Custom .htaccess integration for Symfony",
+    "description": "Custom .htaccess/.htpasswd integration for Symfony",
     "keywords": ["symfony"],
     "homepage": "https://symfony.com",
     "license": "LGPL-3.0-or-later",
@@ -13,12 +13,12 @@
     ],
     "autoload": {
         "psr-4": {
-            "Hypertext\\Access\\": "."
+            "Hypertext\\Bundle\\": "."
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "Tests\\Hypertext\\Access\\": "./Tests"
+            "Tests\\Hypertext\\Bundle\\": "./Tests"
         }
     },
     "require": {

@@ -7,13 +7,13 @@
 
         <defaults public="false" />
 
-        <service class="Hypertext\Access\Factory\HypertextAccessFactory" public="true" id="well_known.factory">
+        <service class="Hypertext\Bundle\Factory\HypertextFactory" public="true" id="htaccess.factory">
             <argument type="service" id="parameter_bag" />
         </service>
 
-        <service id="Hypertext\Access\DependencyInjection\CacheWarmer"      public="true">
+        <service id="Hypertext\Bundle\DependencyInjection\CacheWarmer"      public="true">
             <tag name="kernel.cache_warmer" />
-            <argument type="service" id="well_known.factory" />
+            <argument type="service" id="htaccess.factory" />
         </service>
 
     </services>
