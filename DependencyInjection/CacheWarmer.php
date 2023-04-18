@@ -47,6 +47,6 @@ class CacheWarmer implements CacheWarmerInterface
             echo PHP_EOL.PHP_EOL;
         }
 
-        return array_filter([$htpasswd, $htaccess]);
+        return [];
     }
 }

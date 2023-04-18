@@ -16,8 +16,8 @@ class HypertextExtension extends Extension
         // Format XML
         $loader = new XmlFileLoader($container, new FileLocator(\dirname(__DIR__, 1).'/Resources/config'));
         $loader->load('services.xml');
-
         $processor = new Processor();
+
         $configuration = new Configuration();
         $config = $processor->processConfiguration($configuration, $configs);
         $this->setConfiguration($container, $config, $configuration->getTreeBuilder()->getRootNode()->getNode()->getName());

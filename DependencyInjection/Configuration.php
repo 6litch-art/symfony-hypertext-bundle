@@ -14,7 +14,7 @@ class Configuration implements ConfigurationInterface
      */
     public function getConfigTreeBuilder(): TreeBuilder
     {
-        $this->treeBuilder = new TreeBuilder('htaccess');
+        $this->treeBuilder = new TreeBuilder('hypertext');
 
         $rootNode = $this->treeBuilder->getRootNode();
         $this->addGlobalOptionsSection($rootNode);
@@ -32,117 +32,91 @@ class Configuration implements ConfigurationInterface
     {
         $rootNode
             ->children()
+
                 ->booleanNode('enable')
                     ->info('Enable feature')
                     ->defaultValue(true)
                     ->end()
-                ->booleanNode('basedir_warning')
-                    ->info('Make sure to display warning message in case this bundle is enabled but website not at the root')
-                    ->defaultValue(true)
-                    ->end()
-                ->booleanNode('alias_to_public')
-                    ->info('Make sure to create symbolink from files into .well_known directory to public root')
-                    ->defaultValue(true)
-                    ->end()
-                ->booleanNode('override_existing')
-                    ->info('Override text files in case it already exists')
-                    ->defaultValue(true)
+                ->scalarNode('encrypt')
+                    ->info('Encryption type')
+                    ->defaultValue("md5-apr")
                     ->end()
 
-                ->scalarNode('location_uri')
-                    ->info('Location of the [security,robots,..].txt files')
-                    ->defaultValue("/.well-known")
-                    ->end()
-
-                ->arrayNode('gnupg')->addDefaultsIfNotSet()
-                    ->children()
-                        ->scalarNode('directory')
-                            ->info('Location of the GNUpg program')
-                            ->defaultValue("~/.gnupg")
-                        ->end()
-                    ->end()
-                    ->children()
-                        ->scalarNode('uid')
-                        ->info('Identifier of the pubring to consider')
-                        ->end()
+                ->arrayNode('password')
+                    ->info('Hypertext password files')
+                    ->arrayPrototype()    
+                        ->scalarPrototype()->end()
                     ->end()
                 ->end()
 
-                ->arrayNode('resources')->addDefaultsIfNotSet()
+                ->arrayNode('access')->addDefaultsIfNotSet()
                     ->children()
 
-                        ->scalarNode('humans_txt')
-                            ->info('Location of the humans.txt file')
-                            ->defaultValue(null)
+                    ->arrayNode('error_document')
+                        ->scalarPrototype()->end()
+                        ->end()
+                   
+                    ->scalarNode('auth_name')
+                        ->defaultValue("Dialog prompt")
                         ->end()
 
-                        ->arrayNode('ads_txt')
-                            ->arrayPrototype()
-                                ->scalarPrototype()->end()
-                            ->end()
+                    ->scalarNode('auth_type')
+                        ->defaultValue("Basic")
                         ->end()
 
-                        ->arrayNode('robots_txt')
-                            ->arrayPrototype()
-                                ->children()
-                                    ->arrayNode('user_agent')
-                                            ->scalarPrototype()->end()
-                                    ->end()
-                                    ->arrayNode('disallow')
-                                            ->scalarPrototype()->end()
-                                    ->end()
-                                    ->arrayNode('allow')
-                                            ->scalarPrototype()->end()
-                                    ->end()
-                                    ->arrayNode('sitemap')
-                                            ->scalarPrototype()->end()
-                                    ->end()
-                                ->end()
-                            ->end()
+                    ->scalarNode('auth_user_file')
+                        ->defaultValue(null)
                         ->end()
 
-                        ->scalarNode('change_password')
-                            ->info('Change password page')
-                        ->end()
-
-                        ->arrayNode('security_txt')->addDefaultsIfNotSet()
+                    ->arrayNode('files')
+                        ->arrayPrototype()
+                            ->info("File list")
                             ->children()
-                                ->scalarNode('canonical')
-                                    ->info('Location of the canonical security.txt (relative to HTTP base directory)')
-                                ->end()
-                                ->scalarNode('encryption')
-                                    ->info('Location of the encryption key (relative to HTTP base directory)')
-                                ->end()
-                                ->scalarNode('expires')
-                                    ->info('Expiration date: either a datetime using RFC3999 format or modifier (e.g. +1y)')
+
+                            ->scalarNode('name')
+                                ->defaultValue(null)
                                 ->end()
 
-                                ->arrayNode('contacts')
-                                    ->addDefaultChildrenIfNoneSet()
-                                        ->prototype('scalar')
-                                    ->end()
+                                ->scalarNode('auth_name')
+                                ->defaultValue("Dialog prompt")
+                                ->end()
+        
+                            ->scalarNode('auth_type')
+                                ->defaultValue("Basic")
+                                ->end()
+        
+                            ->scalarNode('auth_user_file')
+                                ->defaultValue(null)
+                                ->end()
+                            ->end()
+                        ->end()
+                    ->end()
+
+                    ->arrayNode('files_match')
+                        ->arrayPrototype()
+                            ->info("File list")
+                            ->children()
+
+                            ->scalarNode('pattern')
+                                ->defaultValue(null)
                                 ->end()
 
-                                ->arrayNode('preferred_languages')
-                                    ->addDefaultChildrenIfNoneSet()
-                                        ->prototype('scalar')
-                                    ->end()
+                                ->scalarNode('auth_name')
+                                ->defaultValue("Dialog prompt")
                                 ->end()
-
-                                ->scalarNode('acknowledgements')
-                                    ->info('Acknowledgement page ')
+        
+                            ->scalarNode('auth_type')
+                                ->defaultValue("Basic")
                                 ->end()
-
-                                ->scalarNode('policy')
-                                    ->info('Policy page')
-                                ->end()
-                                ->scalarNode('hiring')
-                                    ->info('Hiring page information')
+        
+                            ->scalarNode('auth_user_file')
+                                ->defaultValue(null)
                                 ->end()
                             ->end()
                         ->end()
                     ->end()
                 ->end()
-            ->end();
+            ->end()
+        ->end();
     }
 }
