@@ -143,7 +143,7 @@ class HypertextFactory
             }
 
             // File by file .htaccess auth
-            $filesEntries = $this->parameterBag->get("hypertext.access.files");
+            $filesEntries = $this->parameterBag->get("hypertext.access.files") ?? [];
             foreach($filesEntries as $filesEntry) {
 
                 $files = $filesEntry["name"] ?? ".*";
@@ -167,7 +167,7 @@ class HypertextFactory
             }
 
             // File match .htaccess auth
-            $filesMatchEntries = $this->parameterBag->get("hypertext.access.files_match");
+            $filesMatchEntries = $this->parameterBag->get("hypertext.access.files_match") ?? [];
             foreach($filesMatchEntries as $filesMatchEntry) {
 
                 $filesMatch = $filesMatchEntry["pattern"] ?? ".*";
