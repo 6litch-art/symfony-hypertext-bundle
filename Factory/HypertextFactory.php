@@ -3,11 +3,14 @@
 namespace Hypertext\Bundle\Factory;
 
 use Hypertext\Bundle\HypertextBundle;
+use Hypertext\Bundle\Traits\HypertextFactoryTrait;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\Filesystem\Filesystem;
 
 class HypertextFactory
 {
+    use HypertextFactoryTrait;
+
     /**
      * @var ParameterBagInterface
      */
@@ -102,7 +105,7 @@ class HypertextFactory
                 }
 
                 $suffix = $htpasswd == $id ? "" : ".".$id;
-                file_put_htpasswd($entry, $this->publicDir."/.htpasswd".$suffix, $encrypt);
+                $this->file_put_htpasswd($entry, $this->publicDir."/.htpasswd".$suffix, $encrypt);
             }
         }
     }
