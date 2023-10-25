@@ -37,29 +37,61 @@ class HypertextFactory
     {
         $this->parameterBag = $parameterBag;
 
-        $this->filesystem            = new Filesystem();
-        $this->enable                = $this->parameterBag->get("hypertext.enable");
+        $this->filesystem   = new Filesystem();
+        $this->enable       = $this->parameterBag->get("hypertext.enable");
 
-        $this->publicDir = $this->parameterBag->get('kernel.project_dir')."/public";
+        $this->publicDir    = $this->parameterBag->get('kernel.project_dir')."/public";
+    }
+
+    protected function StringStripPrefix(?string $haystack, array|string $needle = " ", bool $recursive = true): ?string
+    {
+        if ($haystack === null) {
+            return null;
+        }
+        if (is_array($needle)) {
+            $lastHaystack = null;
+            while ($haystack != $lastHaystack) {
+                $lastHaystack = $haystack;
+                foreach ($needle as $n) {
+                    $haystack = $this->StringStripPrefix($haystack, $n);
+                }
+            }
+
+            return $haystack;
+        }
+
+        $needleLength = strlen($needle);
+        if (!$needleLength) {
+            return $haystack;
+        }
+
+        while (strrpos($haystack, $needle) !== false && !empty($needle) && str_starts_with($haystack, $needle)) {
+            $haystack = substr($haystack, $needleLength);
+            if (!$recursive) {
+                break;
+            }
+        }
+
+        return $haystack;
     }
 
     public function format(string $path, ?string $stripPrefix = "")
     {
         if (str_contains($path, "@")) {
-            return "mailto: ".str_lstrip(trim($path), "mailto:");
+            return "mailto: ".$this->StringStripPrefix(trim($path), "mailto:");
         }
         if (filter_var($path, FILTER_VALIDATE_URL)) {
             return $path;
         }
 
         if (str_starts_with($path, "/")) {
-            return str_lstrip($this->getPublicDir().$path, $stripPrefix);
+            return $this->StringStripPrefix($this->getPublicDir().$path, $stripPrefix);
         }
 
         $dir = $this->getPublicDir();
         $this->filesystem->mkdir($dir, 0777, true);
 
-        return str_lstrip($dir."/".$path, $stripPrefix);
+        return $this->StringStripPrefix($dir."/".$path, $stripPrefix);
     }
 
     public function getPublicDir(): string
@@ -76,7 +108,7 @@ class HypertextFactory
             return true;
         }
         if (str_starts_with($fname, $this->getPublicDir())) {
-            $base = explode("/", str_lstrip($fname, $this->getPublicDir()), 1)[0];
+            $base = explode("/", $this->StringStripPrefix($fname, $this->getPublicDir()), 1)[0];
             if (!in_array($base, ["bundles", "assets", "storage"])) {
                 return true;
             }
@@ -87,8 +119,12 @@ class HypertextFactory
 
     public function htpasswd()
     {
-        $htpasswd     = $this->parameterBag->get("hypertext.access.auth_user_file") ?? null;
-        $htpasswdList = $this->parameterBag->get("hypertext.password") ?? [];
+        $htpasswd = $this->parameterBag->get("hypertext.access.auth_user_file") ?? null;
+        $htpasswdList = [];
+        if($this->parameterBag->has("hypertext.password")) {
+            $htpasswdList = $this->parameterBag->get("hypertext.password") ?? [];
+        }
+
         $encrypt = $this->parameterBag->get("hypertext.encrypt");
 
         foreach(glob($this->publicDir."/.htpasswd*") as $f) {
@@ -127,7 +163,11 @@ class HypertextFactory
             $htaccess[] = self::GENERATION_PREFIX." ".HypertextBundle::BUNDLE_NAME." on ".date("Y-m-d") ." at ". date("H:i:s");
             $htaccess[] = "";
 
-            $errorDocuments = $this->parameterBag->get("hypertext.access.error_document") ?? [];
+            $errorDocuments = [];
+            if($this->parameterBag->has("hypertext.access.error_document")) {
+                $errorDocuments = $this->parameterBag->get("hypertext.access.error_document") ?? [];
+            }
+            
             foreach($errorDocuments as $code => $document) {
                 $htaccess[] = "ErrorDocument " . $code. " " . $document;
             }
@@ -147,7 +187,11 @@ class HypertextFactory
             }
 
             // File by file .htaccess auth
-            $filesEntries = $this->parameterBag->get("hypertext.access.files") ?? [];
+            $filesEntries = [];
+            if($this->parameterBag->has("hypertext.access.files")) {
+                $filesEntries = $this->parameterBag->get("hypertext.access.files");
+            }
+
             foreach($filesEntries as $filesEntry) {
 
                 $files = $filesEntry["name"] ?? ".*";
@@ -171,7 +215,11 @@ class HypertextFactory
             }
 
             // File match .htaccess auth
-            $filesMatchEntries = $this->parameterBag->get("hypertext.access.files_match") ?? [];
+            $filesMatchEntries = [];
+            if($this->parameterBag->has("hypertext.access.files_match")) {
+                $filesMatchEntries = $this->parameterBag->get("hypertext.access.files_match");
+            }
+
             foreach($filesMatchEntries as $filesMatchEntry) {
 
                 $filesMatch = $filesMatchEntry["pattern"] ?? ".*";
@@ -194,9 +242,14 @@ class HypertextFactory
                 $htaccess[] = "";
             }
         }
+       
+        while( \str_starts_with(end($htaccess), self::GENERATION_PREFIX) || empty(trim(end($htaccess))) ) {
 
-        while( \str_starts_with(end($htaccess), self::GENERATION_PREFIX) || empty(trim(end($htaccess))) )
             array_pop($htaccess);
+            if(empty($htaccess)) {
+                break;
+            }
+        }
 
         $htaccess[] = ""; // EOF
 
