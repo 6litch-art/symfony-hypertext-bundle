@@ -121,20 +121,24 @@ class HypertextFactory
     {
         $htpasswd = $this->parameterBag->get("hypertext.access.auth_user_file") ?? null;
         $htpasswdList = [];
+
         if($this->parameterBag->has("hypertext.password")) {
-            $htpasswdList = $this->parameterBag->get("hypertext.password") ?? [];
+
+            $htpasswdList = array_merge($this->parameterBag->get("hypertext.password") ?? []);
+            foreach($htpasswdList as $key => $htpassd) {
+                $htpasswdList[$key] = \array_key_flattens(".", $htpassd);
+            }
         }
 
         $encrypt = $this->parameterBag->get("hypertext.encrypt");
-
         foreach(glob($this->publicDir."/.htpasswd*") as $f) {
             unlink($f);
         }
 
         if($this->enable) {
 
-            foreach($htpasswdList as $id => $entry)
-            {
+            foreach($htpasswdList as $id => $entry) {
+
                 $fname = $this->format(".htpasswd.".$id);
                 if (!$this->isSafePlace($fname)) {
                     return null;
@@ -171,6 +175,7 @@ class HypertextFactory
             foreach($errorDocuments as $code => $document) {
                 $htaccess[] = "ErrorDocument " . $code. " " . $document;
             }
+
             if($errorDocuments) $htaccess[] = "";
             
             // Default .htaccess auth
