@@ -27,7 +27,7 @@ class CacheWarmer implements CacheWarmerInterface
     {
         return false;
     }
-    public function warmUp($cacheDir): array
+    public function warmUp(string $cacheDir, ?string $buildDir = null): array
     {
         if ($this->shellVerbosity > 0 && php_sapi_name() == "cli") {
             echo " // Warming up cache... Hypertext access bundle.. ";
