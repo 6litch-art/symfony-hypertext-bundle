@@ -1,8 +1,8 @@
 {
-    "name": "glitchr/well-known",
+    "name": "glitchr/hypertext-bundle",
     "type": "symfony-bundle",
-    "description": ".well-known directory integration for Symfony",
-    "keywords": ["symfony", "ux", "crisp"],
+    "description": "Custom .htaccess/.htpasswd integration for Symfony",
+    "keywords": ["symfony"],
     "homepage": "https://symfony.com",
     "license": "MIT",
     "authors": [
